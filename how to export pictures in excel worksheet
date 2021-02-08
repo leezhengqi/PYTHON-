@@ -1,0 +1,96 @@
+#以下代码实现了从excel文件中提取图片：先将excel文件修改为zip压缩包，通过解压获取excel工作表中的图片
+#具体分为3步：1、将excel后缀名修改为.zip；2、解压文件；3、读取解压后的文件夹，将图片搬移到另外一个文件夹进行保存（因为解压后会有很多文件夹，图片找起来不方便，单独提取出来存放，方便查看）
+以下代码还实现了，循环读取多个excel文件，并将最后提取出来的图片名加上EXCEL文件名作为区分
+
+# 修改指定目录下的文件类型名，将excel后缀名修改为.zip
+def change_file_name(file_path, new_type='.zip'):
+    if not isfile_exist(file_path):
+        return ''
+
+    extend = os.path.splitext(file_path)[1]  # 获取文件拓展名
+    if extend != '.xlsx' and extend != '.xls':
+        print("It's not a excel file! %s" % file_path)
+        return False
+
+    file_name = os.path.basename(file_path)  # 获取文件名
+    new_name = str(file_name.split('.')[0]) + new_type  # 新的文件名，命名为：xxx.zip
+
+    dir_path = os.path.dirname(file_path)  # 获取文件所在目录
+    new_path = os.path.join(dir_path, new_name)  # 新的文件路径
+    if os.path.exists(new_path):
+        os.remove(new_path)
+
+    os.rename(file_path, new_path)  # 保存新文件，旧文件会替换掉
+
+    return new_path  # 返回新的文件路径，压缩包
+
+
+# 解压文件
+def unzip_file(zipfile_path):
+    if not isfile_exist(zipfile_path):
+        return False
+
+    if os.path.splitext(zipfile_path)[1] != '.zip':
+        print("It's not a zip file! %s" % zipfile_path)
+        return False
+
+    file_zip = zipfile.ZipFile(zipfile_path, 'r')
+    file_name = os.path.basename(zipfile_path)  # 获取文件名
+    zipdir = os.path.join(os.path.dirname(zipfile_path), str(file_name.split('.')[0]))  # 获取文件所在目录
+    for files in file_zip.namelist():
+        file_zip.extract(files, os.path.join(zipfile_path, zipdir))  # 解压到指定文件目录
+
+    file_zip.close()
+    return True
+
+
+# 读取解压后的文件夹，打印图片路径
+def read_img(zipfile_path,img_path):
+    if not isfile_exist(zipfile_path):
+        return False
+
+    dir_path = os.path.dirname(zipfile_path)  # 获取文件所在目录
+    file_name = os.path.basename(zipfile_path)  # 获取文件名
+    unzip_dir = os.path.join(dir_path, str(file_name.split('.')[0]))
+    pic_dir = 'xl' + os.sep + 'media'  # excel变成压缩包后，再解压，图片在media目录
+    pic_path = os.path.join(dir_path, str(file_name.split('.')[0]), pic_dir)
+
+    file_list = os.listdir(pic_path)
+    for file in file_list:
+        filepath = os.path.join(pic_path, file)
+        print(filepath,img_path)
+        shutil.move(filepath,img_path)
+    os.unlink(zipfile_path)
+    shutil.rmtree(unzip_dir)
+
+# 组合各个函数
+def compenent(excel_file_path,img_path):
+    zip_file_path = change_file_name(excel_file_path)
+    if not os.path.exists(img_path):
+        os.mkdir(img_path)
+    if zip_file_path != '':
+        unzip_msg = unzip_file(zip_file_path)
+        if unzip_msg:
+            read_img(zip_file_path,img_path)
+            
+root = tkinter.Tk()
+root.withdraw()#隐藏
+filenamelist=filedialog.askopenfilenames(filetypes=[('excelfiles',('.xls','.xlsx'))])#打开需要读取图片的excel文件
+root.destroy() #销毁
+for file in filenamelist:#循环读取多个excel文件，
+    # main
+    if __name__ == '__main__':
+
+    #图片目录
+        img_dir = 'D:\\lee'
+
+        file_name1 = os.path.basename(file)
+        compenent(file,img_dir)
+
+        img_list=os.listdir(img_dir)
+    
+        file_name2=file_name1.split('.')[0]
+        file_name3=file_name2.split('_')[1]
+        #提取出来的图片名重命名，加上EXCEL文件名作为区分
+        for img in img_list:
+            os.rename('D:\\lee\\'+img,'D:\\output\\'+file_name3+'-'+img)
