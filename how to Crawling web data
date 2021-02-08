@@ -1,0 +1,62 @@
+#以下代码实现爬取视频文件的功能，爬取网页数据通常有如下几个步骤：
+1、分析目标网页，确定待爬取的URL路径、header参数等信息
+2、发送请求：使用第三方库requests模拟浏览器发送请求，获取响应数据
+3、解析获取到的数据：此时可使用json模块或其他模块，将获取到的字符串转换为python可交互的数据
+3.1 数据转换
+3.2 数据解析
+4、保存爬取的数据，将其存在目标文件夹中
+
+
+代码实例：
+
+#导入所需要的第三方模块
+import requests#用于模拟网页发送请求
+from bs4 import BeautifulSoup#用于分析html文件
+import re#用于将字符串转化为正则表达式
+
+#分析目标网页，确定待爬取的URL路径、header参数等信息
+url='http://edu.bestlink.net.cn/Student/NewCourses.ashx?id=100'
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36',
+'Accept-Encoding': 'gzip, deflate',
+'Accept-Language': 'zh-CN,zh;q=0.9',
+'Cookie': 'StuedentUID=8c0776ab18e162512c9791d20a739984; edu_Student=993; stuid=aa9cbe9816864fcb87f07e52c56d4fe2; Course_2628=2628; stOnlineNumx=717'}
+#发送请求：使用第三方库requests模拟浏览器发送请求，获取响应数据
+response = requests.get(url,headers=headers)
+
+data=response.text
+#3.1 数据转换
+soup=BeautifulSoup(data,'html.parser')
+
+#print(soup)
+#3.2 数据解析
+for items in soup.find_all('div',class_='courseContentTitle'):
+    item=items.select('a')[0]
+    detail_url=item.get('href')
+    #print(detail_url)
+    i=detail_url[30:34]
+    #print(i)
+#再次发起网页请求
+url1='http://edu.bestlink.net.cn/newoutline.ashx?couid='+i
+#print(url1)
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36',
+'Accept-Encoding': 'gzip, deflate',
+'Accept-Language': 'zh-CN,zh;q=0.9',
+'Cookie': 'StuedentUID=8c0776ab18e162512c9791d20a739984; edu_Student=993; stuid=aa9cbe9816864fcb87f07e52c56d4fe2; Course_2628=2628; stOnlineNumx=717'}
+#获得响应
+response1 = requests.get(url1,headers=headers)
+data1=response1.text
+#3.1 数据转换
+soup1=BeautifulSoup(data1,'html.parser')
+#print(soup1)
+#3.2 数据解析
+ddd=soup1.select('div.leftContent script')[0].string.replace('\n', '').replace('\r', '').replace(' ', '')
+
+str_pat = re.compile(r'"(.*?)"')#创建正则表达式
+
+print(str_pat.findall(ddd)[0]+str_pat.findall(ddd)[1])#使用正则表达式匹配字符串，找到目标字符
+
+#保存爬取的数据，将其存在目标文件夹中
+
+
+
+
