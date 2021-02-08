@@ -1,0 +1,7 @@
+#打开对话框，选取后缀名为.xls和.xlsx的文件
+import tkinter
+from tkinter import Tk,filedialog
+root = tkinter.Tk()
+root.withdraw()#隐藏
+filenamelist=filedialog.askopenfilenames(filetypes=[('excelfiles',('.xls','.xlsx'))])
+root.destroy() #销毁
