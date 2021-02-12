@@ -1,0 +1,79 @@
+#打开文件选取对话框，选取待处理合并的文件，并将数据合并至新的工作表
+
+import xlrd
+import xlsxwriter
+import os
+
+
+def open_xlsx(file):
+    fh=xlrd.open_workbook(file)
+    return fh
+# 获取sheet表的个数
+def get_sheet_num(fh):
+    x = len(fh.sheets())
+    return x
+def get_file_content(file,shnum):
+    fh=open_xlsx(file)
+    table=fh.sheets()[shnum]
+    num=table.nrows
+    
+    for row in range(1,num):
+        rdata=table.row_values(row)
+        datavalue.append(rdata)
+    return datavalue
+def get_file_content1(file,shnum):
+    fh=xlrd.open_workbook(file)
+    table=fh.sheets()[shnum]
+    num=table.nrows
+    
+    for row in range(num):
+        rdata=table.row_values(row)
+        datavalue1.append(rdata)
+    return datavalue1
+if __name__=='__main__':
+    rvalue = []
+    rvalue1 = []
+    rvalue2 = []
+    fh=[]
+        #打开对话框，选取后缀名为.xls和.xlsx的文件
+    import tkinter
+    from tkinter import Tk,filedialog
+    root = tkinter.Tk()
+    root.withdraw()#隐藏
+    file=filedialog.askopenfilename(filetypes=[('excelfiles',('.xls','.xlsx'))])
+    root.destroy() #销毁
+ 
+
+
+    fh=xlrd.open_workbook(file)   
+    x = get_sheet_num(fh)
+
+    for shnum in range(x):
+            
+        #print("正在读取文件："+str(fl)+"的第"+str(shnum)+"个sheet表的内容...")
+        table=fh.sheets()[shnum]
+        num=table.nrows
+        for row in range(num):
+            rdata=table.row_values(row)
+            rvalue2.append(rdata)
+        
+        for row in range(1,num):
+            rdata=table.row_values(row)
+            rvalue.append(rdata)
+
+       
+    # 定义最终合并后生成的新文件
+    endfile = "D:\\PYTHON学习\\sum.xlsx"
+    wb1=xlsxwriter.Workbook(endfile)
+    # 创建一个sheet工作对象
+    ws=wb1.add_worksheet()
+    rvalue1=rvalue2[0]
+    for b1 in range(len(rvalue1)):
+            c1=rvalue1[b1]
+            ws.write(0,b1,c1)
+    for a in range(len(rvalue)):
+        for b in range(len(rvalue[a])):
+            c=rvalue[a][b]
+            ws.write(a+1,b,c)
+    wb1.close()
+  
