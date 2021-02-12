@@ -1,0 +1,31 @@
+#将一个Excel表，按某一列拆分成多张表
+
+import pandas as pd
+import xlsxwriter
+import xlrd
+#data=pd.read_excel(r"C:\Users\Administrator\Desktop\chaifen.xlsx",encoding='gbk')
+
+import tkinter
+from tkinter import Tk,filedialog
+root = tkinter.Tk()
+root.withdraw()#隐藏
+file=filedialog.askopenfilename(filetypes=[('excelfiles',('.xls','.xlsx'))])
+root.destroy() #销毁
+
+#print(file)
+data=pd.read_excel(file)#data是导入库中已定义的class
+#data=xlrd.open_workbook(r"D:\PYTHON学习\sum.xlsx")  
+#print(data)
+keyword=input('请输入要筛选的字段名')
+area_list=list(set(data[keyword]))
+print(area_list)
+writer=pd.ExcelWriter(r"D:\PYTHON学习\拆分.xlsx",engine='xlsxwriter')
+data.to_excel(writer,sheet_name="总表",index=False)
+
+for j in area_list:
+    df=data[data[keyword]==j]#当data[keyword]取的数据与j相同时，为True，此时将所有结果为True的数据取出，赋值给df
+    #print(type(data))
+    df.to_excel(writer,sheet_name=j,index=False) 
+
+writer.save()  #一定要加上这句代码，“拆好的表”才会显示出来,否则拆分后的结果文件打开时报错
+ 
