@@ -1,0 +1,77 @@
+#可通过文件夹选取的方式，选取文件夹下多个EXCEL文件工作表进行合并
+
+import xlrd
+import xlsxwriter
+import os
+
+#用EXCEL打开指定文件
+def open_xlsx(file):
+    fh=xlrd.open_workbook(file)
+    return fh
+    
+# 获取sheet表的个数
+def get_sheet_num(fh):
+    x = len(fh.sheets())
+    return x
+    
+#获取一个工作表中所有range的数据
+def get_file_content(file,shnum):
+    fh=open_xlsx(file)
+    table=fh.sheets()[shnum]
+    num=table.nrows
+    #遍历工作表中每一行，获取每个range的数据，并依次添加在datavalue列表中
+    for row in range(1,num):#第一行除外，因为第一行是表头信息
+        rdata=table.row_values(row)
+        datavalue.append(rdata)
+    return datavalue
+# 以下代码最终实现第一行表头信息的获取，即datavalue1[0]
+def get_file_content1(file,shnum):
+    fh=open_xlsx(file)
+    table=fh.sheets()[shnum]
+    num=table.nrows
+    for row in range(num):
+        rdata=table.row_values(row)
+        datavalue1.append(rdata)
+    return datavalue1
+    
+#以下是主程序部分：   
+if __name__=='__main__':
+    datavalue = []
+    datavalue1 = []
+    
+    #打开对话框，选取后缀名为.xls和.xlsx的文件
+    import tkinter
+    from tkinter import Tk,filedialog
+    root = tkinter.Tk()
+    root.withdraw()#隐藏
+    filenamelist=filedialog.askopenfilenames(filetypes=[('excelfiles',('.xls','.xlsx'))])
+    root.destroy() #销毁
+    
+    #打开需要合并的EXCEL工作簿文件，并遍历每个工作簿文件中的每个工作表，获取每个工作表每一行每一range内的数据
+    for fl in filenamelist:
+        fh = open_xlsx(fl)     
+        x = get_sheet_num(fh)
+        for shnum in range(x):
+            print("正在读取文件："+str(fl)+"的第"+str(shnum)+"个sheet表的内容...")
+            rvalue = get_file_content(fl,shnum)
+            
+    # 定义最终合并后生成的新文件
+    endfile = "D:\\PYTHON学习\\concat.xlsx"
+    wb1=xlsxwriter.Workbook(endfile)
+    # 创建一个sheet工作对象
+    ws=wb1.add_worksheet()
+    
+    #以下代码最终实现第一行表头信息的获取
+    rvalue1=get_file_content1(filenamelist[0],0)[0]
+    #先填入表头数据
+    for b1 in range(len(rvalue1)):
+            c1=rvalue1[b1]
+            ws.write(0,b1,c1)
+            
+    #在新建的工作表中写入数据（除第一行表头）
+    for a in range(len(rvalue)):
+        for b in range(len(rvalue[a])):
+            c=rvalue[a][b]
+            ws.write(a+1,b,c)
+    wb1.close()
+  
