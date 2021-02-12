@@ -23,7 +23,7 @@ writer=pd.ExcelWriter(r"D:\PYTHON学习\拆分.xlsx",engine='xlsxwriter')
 data.to_excel(writer,sheet_name="总表",index=False)
 
 for j in area_list:
-    df=data[data[keyword]==j]#当data[keyword]取的数据与j相同时，为True，此时将所有结果为True的数据取出，赋值给df
+    df=data[data[keyword]==j]#实现了关键字段的筛选，当data[keyword]取的数据与j相同时，为True，此时将所有结果为True的数据取出，赋值给df
     #print(type(data))
     df.to_excel(writer,sheet_name=j,index=False) 
 
