@@ -1,0 +1,15 @@
+from selenium import webdriver
+import time
+#首先下载对应的webdriver（驱动）,下载完毕之后，将下载的驱动，命名为MicrosoftWebDriver.exe，复制到python安装目录下的scripts文件夹里面。
+#下载时，选择对应的浏览器版本,十分重要!!版本可在设置---关于---中查看
+browser = webdriver.Edge()
+browser.get("http://oa.bestlink.com.cn:8088/main/login.jsp")
+time.sleep(2)
+name = browser.find_element_by_id("uname")
+name.send_keys("JH000244")
+passwd = browser.find_element_by_id("j_password")
+passwd.send_keys("Lee19801020?")
+login_button = browser.find_element_by_id("btnSubmit")
+login_button.click()
+browser.maximize_window()
+#browser.find_element_by_class_name('嘉环在线学习考试平台').click()
